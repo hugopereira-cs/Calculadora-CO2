@@ -193,3 +193,30 @@ RESPONSIVE:
     * Adjust padding and spacing
 
 Make everything visualy polished and professional
+
+-------- Promt deploy ----------
+
+Create .gthub/workflows/deploy.yml dor GitHub Pages deployment
+
+NAME: "Deploy to GitHub Pages"
+
+TRIGGERS:
+  - on push to main branch
+  - on workflow_dispatch (manual trigger)
+
+PERMISSIONS:
+  - contents: read
+  - pages: write
+  - id-token: write
+
+SINGLE JOB named "deploy":
+  - environment name: github-pages
+  - environment url: use deployment output page_url
+  - runs-on: ubuntu-latest
+  - steps:
+    1. Checkout repository (uses: actions/checkout@v4)
+    2. Setup GitHub Pages (uses: actions/configure-pages@v4)
+    3. Upload artifact from root directory (uses: actions/upload-pages-artifact@v3, with path: '.')
+    4. Deploy to GitHub Pages (uses: actions/deploy-pages@v4, id: deployment)
+
+This workflow deploys static files directly - no build process needed
