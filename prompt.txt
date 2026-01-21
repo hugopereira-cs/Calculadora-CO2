@@ -1,0 +1,195 @@
+Create js/ui.js with a global UI object containing:
+
+UTILITY METHODS:
+
+formatNumber: function(number, decimals) {
+  // Use toFixed() for decimals
+  // Add thousand separations using regex or toLocaleString('pt-BR')
+  // Return formatted string
+}
+
+formatCurrency: function(value) {
+  // Format as R$ with pt-BR locale
+  // Return "R$ 1.234,56" format
+}
+
+showElement: function(elementId) {
+  // Get element by ID
+  // Remove 'hidden' class
+}
+
+hideElement: function(elementId) {
+  // Get element by ID
+  // Add 'hidden' class
+}
+
+scrollToElement: function(elementId) {
+  // Get element by ID
+  // Use scrollintoView with smooth behavior
+}
+
+RENDERING METHODS:
+
+renderResults: function(data) {
+  // data objects contains: origin, destination, distance, emission, mode, savings
+  // Get mode metadata from CONFIG.TRANSPORT_MODES
+  // Create HTML string with template litarals containing:
+    - Route card showing origin -> destination
+    - Distance card showing distance in km
+    - Emission card showing CO₂ in kg with green leaf icon
+    - Transport card showing mode icon and label
+    - If mode is not 'car' and savings exit: savings card showing kg saved and percentage
+  // Return complete HTML string
+  // Use div with class="results__card" for each card
+  // Use BEM naming for internal elements
+}
+
+renderComparations: function(modesArray, selectedMode) {
+  // modesArray from Calculator.calculateAllModes()
+  // Create HTML string for each mode:
+    -Container div with class="comparation__item"
+    - If mode === selectedMode, add class="comparation__item--selected"
+    - Header with mode icon, label, and emission stats
+    - If selected, add badge with "Selecionado" text
+    - Stats showing emission and percentage vs car
+    - Progress bar with based on emission (use max emission for 100% reference)
+    - Color-code bar: green (0-25%), yellow (25-75%), orange (75-100%), red (>100%)
+  // At the end, add tip box with helpful message
+  // Return complete HTML string
+}
+
+renderCarbonCredits: function(creditsData) {
+  // creditsData contains: { credits, price: { min, max, average } }
+  // Create HTML string with:
+    - Grid with 2 cards
+    - Card 1: Credits needed (large number), helper text "1 crédito = 1000kg CO₂"
+    - Card 2: Estimated price (average), range showing min-max
+    - Info box explaining what carbon credits are
+    - Button " Compensar Emissões" (can be non-funcional for demo)
+  // Return complete HTML string
+  // Use formatNumber and formatCurrency for values
+}
+
+showLoading: function(buttonElement) {
+  // Save originaç text in data attribute:
+  buttonElement.dataset.originalText
+  // Disable buttonElement
+  // Change innerHTML to show spinner and "Calculando..." text
+  // Spinner: '<span class="spinner"></span>Calculando...'
+}
+
+hideLoading: function(buttonElement) {
+  // Enable buttonElement// Restore original text from data attribute
+}
+
+All methods should be part of the global UI object
+Use clear comments explaining the HTML structure
+
+
+------ Prompt app ---------
+
+Create js/app.js with initialization and event handling:
+
+Create an immediately invoked function expression (IIFE) or use DOMContentLoaded event:
+
+INITIALIZATION (when DOM is ready):
+1. Call CONFIG.populateDatalist() to fill city autocomplete
+2. Call CONFIG.setupDistanceAutofill() to enable auto-distance feature
+3. Get form element by id 'calculator-form'
+4. Add submit event listener to form
+5. Log to console: "✅ Calculador inicializada!"
+
+FORM SUBMIT HANDLER:
+When form submits:
+1. Prevent default form submission (e.preventDefault())
+2. Get all form values
+  - origin value (trim whitespace)
+  - destination value (trim whitespace)
+  - distance values (parse as float)
+  - transport mode (get checked radio button value)
+3. Validate inputs:
+  - Check if origin, destination, distance are filled
+  - Check if distance is greater than 0
+  - If validation fails: show alert with error message and Return
+4. Get submit button element
+5. Call UI.showLoading(button) to show loading state
+6. Hide previous results sections using UI.hideElement()
+7. Use setTimeout with 1500ms delay to simulate processing: 
+  inside timeout:
+    - Try-catch block for error handling:
+      * Calculate emission for selected mode using Calculator
+      * Calculate car emission as baseline
+      * Calculate savings compared to car
+      * Calculate all modes comparation
+      * Calculate carbon credits and price estimate
+      * Build data objects for rendering
+      * Call UI.renderResults() and set innerHTML of results-content
+      * Call UI.renderComparison() and set innerHTML of comparison-content
+      * Call UI.renderCarbonCredits() and set innerHTML of carbon-credits-content
+      * Show all these sections using UI.showElement()
+      * Scroll to results section using UI.scrollToElement()
+      * Call UI.hideLoading(button)
+    - Catch any errors:
+      * Log error to console
+      * Show user-friendly alert
+      * Call UI.hideLoading(button)
+
+Add comments explaining each step
+Use descriptive variable names
+Keep code clean and readable
+
+
+------ Prompt de refinamento do css -------
+
+Add to css/style.css styles for dynamically generated content:
+
+RESULTS SECTION:
+  - .results, .comparison, .carbon-credits: white card, padding, margin-bottom, rounded, shadow
+  - .results__card: individual results card styling
+    * Background white, padding 1.5rem, border-radius, subtle shadow
+    * Margin-bottom for spacing
+    * Display flex with align-items center
+  - .results__icon: emojiIcon size 2.5rem, margin-right 1.5rem
+  - .results__data: flex-column
+  - .results__label: small text(0.875rem), gray color, text-transform uppercase, letter-spacing
+  - .results__value: large bold text (1.5rem), dark color
+  - .results__savings: special highlight with border-left (acccent color 4px), background light, padding, display-flex
+    * Icon on left, text content on right
+
+COMPARISON SECTION:
+  - .comparison__item: card with padding 1rem, margin-bottom 1rem, border 2px solid gray-light, rounded, transition
+  - .coparison__item--selected: border-color primary, background light primary (rgba)
+  - .comparison__header: display flex, justify-content space-between, align-items center, margin-bottom 0.5rem
+  - .compariso__mode: display flex, align-items center, gap 0.5rem
+  - .comparison__icon: font-size 1.5rem
+  - .comparison__label: font-weight bold
+  - .comparison__badge: small badge (12px height), background primary, color white, padding 0.25rem 0.5rem, rounded-full, font-size 0.75rem
+  - .comparison__stats: text align-items right
+  - .comparison__emission: font-weight bold, font-size 1.125rem
+  - .comparison__percentage: font-size 0.875rem, color gray
+  - .comparison__bar-container: width 100%, border-radius, transition width 0.5s ease
+  - .comparison__tip: info box with light blue background, border-left info color, padding, margin-top, display flex, gap
+
+CARBON CREEDITS SECTION:
+  - .carbon-credits__grid: display grid, 2 columns on desktop (1 on mobile), gap 1.5rem, border-radius, box-shadow
+  - .carbon-credits__value: very large text (2.5rem), font-weight bold, color primary
+  - .carbon-credits__hint: tuny text (0.75rem), color gray, margi-top
+  - .carbon-credits__info: border 2px dashed info color, background light blue, padding 1rem, border-radius, margin-bottom
+    * Strong tag: font-weight bold, color info
+    * Paragraph: line-height 1.6
+  - .carbon-credits__btn: full width button, primary background, white text, padding 1rem, rounded, font-weight bold, cursor pointer, border none
+    * Hover: secondary color, transform translateY(-2px), shadow
+
+ANIMATIONS:
+  - Add @keyframes fadeIn animation for sections appearing:
+    * from { opacity: 0; transform: translateY(20); }
+    * to { opacity: 1; transform; translateY(0); }
+  - Apply fadeIn to results sections: animation fadeIn 0.5s ease-out
+
+RESPONSIVE:
+  - On mobile (max-width: 767px):
+    * .carbon-credits__grid: 1 column
+    * .results__value: smaller font size
+    * Adjust padding and spacing
+
+Make everything visualy polished and professional
